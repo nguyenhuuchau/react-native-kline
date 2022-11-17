@@ -57,6 +57,32 @@
     CGContextDrawPath(context, kCGPathStroke);
 }
 
+- (void)drawXYAxis:(CGContextRef)context gridRows:(NSUInteger)gridRows gridColums:(NSUInteger)gridColums {
+    CGContextSetStrokeColorWithColor(context, ChartColors_axisLineColor.CGColor);
+    CGContextSetLineWidth(context, 1);
+    //draw y axis
+    CGFloat columsSpace = self.chartRect.size.width / (CGFloat)(gridColums);
+    CGContextMoveToPoint(context, gridColums * columsSpace, 0);
+    CGContextAddLineToPoint(context, gridColums * columsSpace, CGRectGetMaxY(self.chartRect) + ChartStyle_bottomDateHigh);
+    CGContextDrawPath(context, kCGPathFillStroke);
+    CGFloat rowSpace = self.chartRect.size.height / (CGFloat)gridRows;
+    for (int index = 0;  index < gridRows; index++) {
+         CGContextMoveToPoint(context, gridColums * columsSpace, index * rowSpace + ChartStyle_topPadding);
+         CGContextAddLineToPoint(context, CGRectGetMaxX(self.chartRect) + 4, index * rowSpace + ChartStyle_topPadding);
+         CGContextDrawPath(context, kCGPathFillStroke);
+    }
+    //draw y axis
+    CGContextMoveToPoint(context, 0, gridRows * rowSpace + ChartStyle_topPadding);
+    CGContextAddLineToPoint(context, CGRectGetMaxX(self.chartRect) + 60, gridRows * rowSpace + ChartStyle_topPadding);
+    CGContextDrawPath(context, kCGPathFillStroke);
+
+    for (int index = 0;  index < gridColums; index++) {
+         CGContextMoveToPoint(context, index * columsSpace, gridRows * rowSpace + ChartStyle_topPadding);
+         CGContextAddLineToPoint(context, index * columsSpace, gridRows * rowSpace + ChartStyle_topPadding + 4);
+         CGContextDrawPath(context, kCGPathFillStroke);
+    }
+}
+
 - (void)drawChart:(CGContextRef)context lastPoit:(KLineModel *)lastPoint curPoint:(KLineModel *)curPoint curX:(CGFloat)curX {
     if(!_isLine) {
         [self drawCandle:context curPoint:curPoint curX:curX];
@@ -77,8 +103,8 @@
     CGFloat y1 = [self getY:curValue];
     CGFloat x2 = curX + self.candleWidth + ChartStyle_canldeMargin;
     CGFloat y2 = [self getY:lastValue];
-    CGContextSetLineWidth(context, 1);
-    CGContextSetStrokeColorWithColor(context, [UIColor colorWithHexString:_mainBackgroundColor].CGColor);
+    CGContextSetLineWidth(context, 2);
+    CGContextSetStrokeColorWithColor(context, ChartColors_lineColor.CGColor);
     CGContextMoveToPoint(context, x1, y1);
     CGContextAddCurveToPoint(context, (x1 + x2) / 2.0, y1,  (x1 + x2) / 2.0, y2, x2, y2);
     CGContextDrawPath(context, kCGPathFillStroke);
@@ -94,7 +120,7 @@
     CGContextClip(context);
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     CGFloat locations[] = {0,1};
-    NSArray *colors = @[(__bridge id)[UIColor rgb_r:0x4c g:0x86 b:0xCD alpha:1].CGColor, (__bridge id)[UIColor rgb_r:0x00 g:0x00 b:0x00 alpha:0].CGColor];
+    NSArray *colors = @[(__bridge id)[UIColor rgb_r:0xFF g:0xCC b:0x00 alpha:1].CGColor, (__bridge id)[UIColor rgb_r:0x00 g:0x00 b:0x00 alpha:0].CGColor];
     CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (CFArrayRef) colors, locations);
     CGColorSpaceRelease(colorSpace);
     CGPoint start = CGPointMake((x1 + x2) / 2, CGRectGetMinY(self.chartRect));
@@ -194,12 +220,12 @@
         NSString *valueStr = [NSString stringWithFormat:fixedStr,value];
         CGRect rect = [valueStr getRectWithFontSize:ChartStyle_reightTextSize];
         CGFloat y = 0;
-        if(i == 0) {
-            y = [self getY:value];
-        } else {
+        if(i == gridRows) {
             y = [self getY:value] - rect.size.height;
+        } else {
+            y = [self getY:value] - rect.size.height / 2;
         }
-        [self drawText:valueStr atPoint:CGPointMake(self.chartRect.size.width - rect.size.width, y) fontSize:ChartStyle_reightTextSize textColor:ChartColors_reightTextColor];
+        [self drawText:valueStr atPoint:CGPointMake(self.chartRect.size.width + 8, y) fontSize:ChartStyle_reightTextSize textColor:ChartColors_reightTextColor];
     }
 }
 

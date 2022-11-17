@@ -17,8 +17,10 @@
 #define ChartColors_ma5Color   Color(0xffC9B885)
 #define ChartColors_ma10Color   Color(0xff6CB0A6)
 #define ChartColors_ma30Color   Color(0xff9979C6)
-#define ChartColors_upColor   Color(0xff4DAA90)
-#define ChartColors_dnColor   Color(0xffC15466)
+#define ChartColors_upColor   Color(0xFF00CA2C)
+#define ChartColors_dnColor   Color(0xFFFF0017)
+#define ChartColors_volUpColor   Color(0x8000CA2C)
+#define ChartColors_volDnColor   Color(0x80FF0017)
 #define ChartColors_volColor   Color(0xff4729AE)
 
 #define ChartColors_macdColor   Color(0xff4729AE)
@@ -59,10 +61,14 @@
 
 
 //表格右边文字颜色
-#define ChartColors_reightTextColor   Color(0xff70839E)
-#define ChartColors_bottomDateTextColor   Color(0xff70839E)
+#define ChartColors_reightTextColor   Color(0xffdddddd)
+#define ChartColors_bottomDateTextColor   Color(0xffdddddd)
 
 #define ChartColors_crossHlineColor   Color(0x1FFFFFFF)
+
+#define ChartColors_axisLineColor   Color(0xFF666666)
+
+#define ChartColors_lineColor   Color(0xFFFFCC00)
 
 static CGFloat dd = 11.0;
 //点与点的距离（）不用这种方式实现
@@ -93,13 +99,13 @@ static CGFloat ChartStyle_vCrossWidth  = 8.5;
 static CGFloat ChartStyle_hCrossWidth = 0.5;
 
     //网格
-static CGFloat ChartStyle_gridRows = 4;
+static CGFloat ChartStyle_gridRows = 20;
    
 static CGFloat ChartStyle_gridColumns = 5;
 
 static CGFloat ChartStyle_topPadding = 30.0;
    
-static CGFloat ChartStyle_bottomDateHigh = 20.0;
+static CGFloat ChartStyle_bottomDateHigh = 40.0;
    
 static CGFloat ChartStyle_childPadding = 25.0;
 

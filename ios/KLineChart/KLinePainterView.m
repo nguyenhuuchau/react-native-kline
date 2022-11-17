@@ -24,6 +24,7 @@
 @property(nonatomic,assign) CGRect volRect;
 @property(nonatomic,assign) CGRect secondaryRect;
 @property(nonatomic,assign) CGRect dateRect;
+@property(nonatomic,assign) CGRect yRect;
 
 @property(nonatomic,assign) NSUInteger startIndex;
 @property(nonatomic,assign) NSUInteger stopIndex;
@@ -132,32 +133,34 @@
         [self drawGrid:context];
         if(self.datas.count == 0) { return; }
         [self drawChart:context];
+        [self drawAxis:context];
         [self drawRightText:context];
         [self drawDate:context];
-        [self drawMaxAndMin:context];
+        // [self drawMaxAndMin:context];
         if(_isLongPress) {
             [self drawLongPressCrossLine:context];
         } else {
             [self drawTopText:context curPoint:self.datas.firstObject];
         }
-        [self drawRealTimePrice:context];
+        // [self drawRealTimePrice:context];
     }
 }
 
 -(void)divisionRect {
-    CGFloat mainHeight = self.displayHeight * 0.6;
+    CGFloat mainHeight = self.displayHeight * 0.8;
     CGFloat volHeigt = self.displayHeight * 0.2;
     CGFloat secondaryHeight = self.displayHeight * 0.2;
-    if(_volState == VolStateNONE && _secondaryState == SecondaryStateNONE) {
+    if(_secondaryState == SecondaryStateNONE) {
         mainHeight = self.displayHeight;
-    } else if (_volState == VolStateNONE || _secondaryState == SecondaryStateNONE) {
+    } else {
         mainHeight = self.displayHeight * 0.8;
     }
-    self.mainRect = CGRectMake(0, ChartStyle_topPadding, self.frame.size.width, mainHeight);
+    self.mainRect = CGRectMake(0, ChartStyle_topPadding, self.frame.size.width - 60, mainHeight);
+    self.yRect = CGRectMake(self.frame.size.width - 60, ChartStyle_topPadding, self.frame.size.width, mainHeight);
     if(_direction == KLineDirectionHorizontal) {
-        self.dateRect = CGRectMake(0, CGRectGetMaxY(_mainRect), self.frame.size.width, ChartStyle_bottomDateHigh);
+        self.dateRect = CGRectMake(0, CGRectGetMaxY(_mainRect), self.frame.size.width - 60, ChartStyle_bottomDateHigh);
         if(_volState != VolStateNONE) {
-            self.volRect = CGRectMake(0, CGRectGetMaxY(_dateRect), self.frame.size.width, volHeigt);
+            self.volRect = CGRectMake(0, CGRectGetMaxY(_mainRect) - volHeigt, self.frame.size.width - 60, volHeigt);
         }
         if(_secondaryState != SecondaryStateNONE) {
             CGFloat y =  CGRectGetMaxY(_volRect);
@@ -166,13 +169,13 @@
     } else {
        
         if(_volState != VolStateNONE) {
-            self.volRect = CGRectMake(0, CGRectGetMaxY(_mainRect), self.frame.size.width, volHeigt);
+            self.volRect = CGRectMake(0, CGRectGetMaxY(_mainRect) - volHeigt, self.frame.size.width - 60, volHeigt);
         }
         if(_secondaryState != SecondaryStateNONE) {
             CGFloat y =  CGRectGetMaxY(_volRect);
             self.secondaryRect = CGRectMake(0, y, self.frame.size.width, secondaryHeight);
         }
-        self.dateRect = CGRectMake(0,  self.displayHeight + ChartStyle_topPadding, self.frame.size.width, ChartStyle_bottomDateHigh);
+        self.dateRect = CGRectMake(0,  self.displayHeight + ChartStyle_topPadding, self.frame.size.width - 60, ChartStyle_bottomDateHigh);
     }
 }
 
@@ -319,15 +322,22 @@
 }
 -(void)drawGrid:(CGContextRef)context {
     [_mainRenderer drawGrid:context gridRows:ChartStyle_gridRows gridColums:ChartStyle_gridColumns];
-   if(_volRenderer != nil) {
-       [_volRenderer drawGrid:context gridRows:ChartStyle_gridRows gridColums:ChartStyle_gridColumns];
-   }
+    // [_mainRenderer drawXYAxis:context gridRows:ChartStyle_gridRows gridColums:ChartStyle_gridColumns];
+//    if(_volRenderer != nil) {
+//        [_volRenderer drawGrid:context gridRows:ChartStyle_gridRows gridColums:ChartStyle_gridColumns];
+//    }
    if(_seconderyRender != nil) {
        [_seconderyRender drawGrid:context gridRows:ChartStyle_gridRows gridColums:ChartStyle_gridColumns];
    }
-     CGContextSetLineWidth(context, 1);
-    CGContextAddRect(context, self.bounds);
-    CGContextDrawPath(context, kCGPathStroke);
+    //  CGContextSetLineWidth(context, 1);
+    // CGContextAddRect(context, self.bounds);
+    // CGContextDrawPath(context, kCGPathStroke);
+}
+
+-(void)drawAxis:(CGContextRef)context {
+    CGContextSetFillColorWithColor(context, [UIColor colorWithHexString:_mainBackgroundColor].CGColor);
+    CGContextFillRect(context, self.yRect);
+    [_mainRenderer drawXYAxis:context gridRows:ChartStyle_gridRows gridColums:ChartStyle_gridColumns];
 }
 -(void)drawChart:(CGContextRef)context {
     for (NSUInteger index = _startIndex; index <= _stopIndex; index++) {
@@ -339,10 +349,11 @@
         if(index != _startIndex) {
             lastPoint = self.datas[index - 1];
         }
-        [_mainRenderer drawChart:context lastPoit:lastPoint curPoint:curPoint curX:_curX];
         if(_volRenderer != nil) {
             [_volRenderer drawChart:context lastPoit:lastPoint curPoint:curPoint curX:_curX];
         }
+        [_mainRenderer drawChart:context lastPoit:lastPoint curPoint:curPoint curX:_curX];
+        
         if(_seconderyRender != nil) {
             [_seconderyRender drawChart:context lastPoit:lastPoint curPoint:curPoint curX:_curX];
         }
@@ -350,15 +361,15 @@
 }
 -(void)drawRightText:(CGContextRef)context {
     [_mainRenderer drawRightText:context gridRows:ChartStyle_gridRows gridColums:ChartStyle_gridColumns];
-    if(_volRenderer != nil) {
-        [_volRenderer drawRightText:context gridRows:ChartStyle_gridRows gridColums:ChartStyle_gridColumns];
-    }
+    // if(_volRenderer != nil) {
+    //     [_volRenderer drawRightText:context gridRows:ChartStyle_gridRows gridColums:ChartStyle_gridColumns];
+    // }
     if(_seconderyRender != nil) {
         [_seconderyRender drawRightText:context gridRows:ChartStyle_gridRows gridColums:ChartStyle_gridColumns];
     }
 }
 -(void)drawDate:(CGContextRef)context {
-    CGFloat cloumSpace = self.frame.size.width / (CGFloat)ChartStyle_gridColumns;
+    CGFloat cloumSpace = (self.frame.size.width - 60) / (CGFloat)ChartStyle_gridColumns;
     for (int i = 0; i < ChartStyle_gridColumns; i++) {
         NSUInteger index = [self calculateIndexWithSelectX: cloumSpace * (CGFloat)i];
         if([self outRangeIndex:index]) { continue; }

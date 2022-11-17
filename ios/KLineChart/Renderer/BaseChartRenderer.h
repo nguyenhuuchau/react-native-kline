@@ -30,6 +30,10 @@ NS_ASSUME_NONNULL_BEGIN
        gridRows:(NSUInteger)gridRows
      gridColums:(NSUInteger)gridColums;
 
+-(void)drawXYAxis:(CGContextRef)context
+       gridRows:(NSUInteger)gridRows
+     gridColums:(NSUInteger)gridColums;
+
 -(void)drawRightText:(CGContextRef)context
             gridRows:(NSUInteger)gridRows
           gridColums:(NSUInteger)gridColums;

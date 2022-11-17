@@ -27,23 +27,23 @@
 }
 - (void)drawChart:(CGContextRef)context lastPoit:(KLineModel *)lastPoint curPoint:(KLineModel *)curPoint curX:(CGFloat)curX {
     [self drawVolChat:context curPoint:curPoint curX:curX];
-    if(lastPoint != nil){
-        if(curPoint.MA5Volume != 0) {
-            [self drawLine:context lastValue:lastPoint.MA5Volume curValue:curPoint.MA5Volume curX:curX color:ChartColors_ma5Color];
-        }
-        if(curPoint.MA10Volume != 0) {
-            [self drawLine:context lastValue:lastPoint.MA10Volume curValue:curPoint.MA10Volume curX:curX color:ChartColors_ma10Color];
-        }
-    }
+    // if(lastPoint != nil){
+    //     if(curPoint.MA5Volume != 0) {
+    //         [self drawLine:context lastValue:lastPoint.MA5Volume curValue:curPoint.MA5Volume curX:curX color:ChartColors_ma5Color];
+    //     }
+    //     if(curPoint.MA10Volume != 0) {
+    //         [self drawLine:context lastValue:lastPoint.MA10Volume curValue:curPoint.MA10Volume curX:curX color:ChartColors_ma10Color];
+    //     }
+    // }
 }
 
 - (void)drawVolChat:(CGContextRef)context curPoint:(KLineModel *)curPoint curX:(CGFloat)curX {
     CGFloat top = [self getY:curPoint.vol];
     CGContextSetLineWidth(context, self.candleWidth);
     if(curPoint.close > curPoint.open) {
-        CGContextSetStrokeColorWithColor(context, ChartColors_upColor.CGColor);
+        CGContextSetStrokeColorWithColor(context, ChartColors_volUpColor.CGColor);
     } else {
-        CGContextSetStrokeColorWithColor(context, ChartColors_dnColor.CGColor);
+        CGContextSetStrokeColorWithColor(context, ChartColors_volDnColor.CGColor);
     }
     CGContextMoveToPoint(context, curX, CGRectGetMaxY(self.chartRect));
     CGContextAddLineToPoint(context, curX, top);
